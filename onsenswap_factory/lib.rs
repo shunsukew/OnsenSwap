@@ -3,7 +3,7 @@
 use ink_lang as ink;
 
 #[ink::contract]
-mod OnsenswapFactory {
+mod onsenswap_factory {
 
     /// Defines the storage of your contract.
     /// Add new fields to the below struct in order
@@ -58,17 +58,17 @@ mod OnsenswapFactory {
         /// We test if the default constructor does its job.
         #[ink::test]
         fn default_works() {
-            let OnsenswapFactory = OnsenswapFactory::default();
-            assert_eq!(OnsenswapFactory.get(), false);
+            let onsenswap_factory = OnsenswapFactory::default();
+            assert_eq!(onsenswap_factory.get(), false);
         }
 
         /// We test a simple use case of our contract.
         #[ink::test]
         fn it_works() {
-            let mut OnsenswapFactory = OnsenswapFactory::new(false);
-            assert_eq!(OnsenswapFactory.get(), false);
-            OnsenswapFactory.flip();
-            assert_eq!(OnsenswapFactory.get(), true);
+            let mut onsenswap_factory = OnsenswapFactory::new(false);
+            assert_eq!(onsenswap_factory.get(), false);
+            onsenswap_factory.flip();
+            assert_eq!(onsenswap_factory.get(), true);
         }
     }
 }
