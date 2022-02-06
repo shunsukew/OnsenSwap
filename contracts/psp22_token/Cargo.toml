@@ -1,5 +1,5 @@
 [package]
-name = "psp22_token"
+name = "psp22_token_contracts"
 version = "0.1.0"
 authors = ["[your_name] <[your_email]>"]
 edition = "2021"
@@ -20,7 +20,7 @@ onsenswap_project = { path = "../..", default-features = false }
 brush = { tag = "v1.2.0", git = "https://github.com/Supercolony-net/openbrush-contracts", default-features = false, features = ["psp22"] }
 
 [lib]
-name = "psp22_token"
+name = "psp22_token_contract"
 path = "lib.rs"
 crate-type = [
 	# Used for normal contract Wasm blobs.
@@ -30,14 +30,17 @@ crate-type = [
 [features]
 default = ["std"]
 std = [
+   "ink_primitives/std",
+    "ink_metadata",
     "ink_metadata/std",
     "ink_env/std",
     "ink_storage/std",
-    "ink_primitives/std",
+    "ink_lang/std",
     "scale/std",
+    "scale-info",
     "scale-info/std",
 
-    "onsenswap_project",
+    "onsenswap_project/std",
     "brush/std",
 ]
 

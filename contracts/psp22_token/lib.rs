@@ -1,74 +1,37 @@
 #![cfg_attr(not(feature = "std"), no_std)]
+#![feature(min_specialization)]
 
-use ink_lang as ink;
+#[brush::contract]
+pub mod psp22_token {
+    use brush::contracts::psp22::extensions::metadata::*;
+    use ink_prelude::string::String;
+    use onsenswap_project::traits::psp22_token::*;
 
-#[ink::contract]
-mod psp22_token {
-
-    /// Defines the storage of your contract.
-    /// Add new fields to the below struct in order
-    /// to add new static storage fields to your contract.
     #[ink(storage)]
-    pub struct Psp22Token {
-        /// Stores a single `bool` value on the storage.
-        value: bool,
+    #[derive(Default, PSP22Storage, PSP22MetadataStorage)]
+    pub struct PSP22TokenContract {
+        #[PSP22StorageField]
+        psp22: PSP22Data,
+        #[PSP22MetadataStorageField]
+        metadata: PSP22MetadataData,
     }
 
-    impl Psp22Token {
-        /// Constructor that initializes the `bool` value to the given `init_value`.
+    impl PSP22 for PSP22TokenContract {}
+    impl PSP22Metadata for PSP22TokenContract {}
+
+    // trait defined in onsenswap_project::traits::psp22_token
+    impl PSP22Token for PSP22TokenContract {}
+
+    impl PSP22TokenContract {
         #[ink(constructor)]
-        pub fn new(init_value: bool) -> Self {
-            Self { value: init_value }
-        }
-
-        /// Constructor that initializes the `bool` value to `false`.
-        ///
-        /// Constructors can delegate to other constructors.
-        #[ink(constructor)]
-        pub fn default() -> Self {
-            Self::new(Default::default())
-        }
-
-        /// A message that can be called on instantiated contracts.
-        /// This one flips the value of the stored `bool` from `true`
-        /// to `false` and vice versa.
-        #[ink(message)]
-        pub fn flip(&mut self) {
-            self.value = !self.value;
-        }
-
-        /// Simply returns the current value of our `bool`.
-        #[ink(message)]
-        pub fn get(&self) -> bool {
-            self.value
-        }
-    }
-
-    /// Unit tests in Rust are normally defined within such a `#[cfg(test)]`
-    /// module and test functions are marked with a `#[test]` attribute.
-    /// The below code is technically just normal Rust code.
-    #[cfg(test)]
-    mod tests {
-        /// Imports all the definitions from the outer scope so we can use them here.
-        use super::*;
-
-        /// Imports `ink_lang` so we can use `#[ink::test]`.
-        use ink_lang as ink;
-
-        /// We test if the default constructor does its job.
-        #[ink::test]
-        fn default_works() {
-            let psp22_token = Psp22Token::default();
-            assert_eq!(psp22_token.get(), false);
-        }
-
-        /// We test a simple use case of our contract.
-        #[ink::test]
-        fn it_works() {
-            let mut psp22_token = Psp22Token::new(false);
-            assert_eq!(psp22_token.get(), false);
-            psp22_token.flip();
-            assert_eq!(psp22_token.get(), true);
+        pub fn new(name: Option<String>, symbol: Option<String>) -> Self {
+            let mut instance = Self::default();
+            instance.metadata.name = name;
+            instance.metadata.symbol = symbol;
+            instance.metadata.decimals = 18;
+            let total_supply = 1_000_000 * 10_u128.pow(18);
+            assert!(instance._mint(instance.env().caller(), total_supply).is_ok());
+            instance
         }
     }
 }
